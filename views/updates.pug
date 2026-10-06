@@ -1,0 +1,21 @@
+doctype html
+html
+    head
+        title= title
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="/css/style.css")
+    body
+        h1 Update Custom Object Form
+        a(href="/") Return to the homepage
+        .form-wrapper
+            form(action="/update-cobj", method="POST")
+                label(for="name") Name
+                input(type="text", id="name", name="name", required)
+                label(for="animal_type") Animal Type
+                select(id="animal_type", name="animal_type", required)
+                    option(value="dog") Dog
+                    option(value="cat") Cat
+                    option(value="lizzard") Lizard
+                label(for="bio") Bio
+                input(type="text", id="bio", name="bio")
+                input(type="submit", value="Submit")

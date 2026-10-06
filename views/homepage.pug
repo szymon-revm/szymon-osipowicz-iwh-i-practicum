@@ -1,0 +1,19 @@
+doctype html
+html
+    head
+        title= title
+        meta(name="viewport" content="width=device-width, initial-scale=1")
+        link(rel="stylesheet", href="/css/style.css")
+    body
+        a(href="/update-cobj") Add to this table
+        h1 Custom Objects
+        table
+            thead
+                tr
+                    each prop in properties
+                        th= prop.label
+            tbody
+                each record in data
+                    tr
+                        each prop in properties
+                            td= record.properties[prop.name]

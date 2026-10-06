@@ -13,14 +13,61 @@ const PRIVATE_APP_ACCESS = '';
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
 // * Code for Route 1 goes here
+app.get('/', async (req, res) => {
+    const objectProperties = 'https://api.hubapi.com/crm/v3/properties/2-70530070';
+    const objectRecords = 'https://api.hubapi.com/crm/v3/objects/2-70530070';
+    const headers = {
+        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+        'Content-Type': 'application/json'
+    };
+
+    try {
+        const propsResp = await axios.get(objectProperties, { headers });
+        const properties = propsResp.data.results
+            .filter(prop => !prop.hubspotDefined)
+            .map(prop => ({ name: prop.name, label: prop.label }));
+
+        const resp = await axios.get(objectRecords, {
+            headers,
+            params: { properties: properties.map(prop => prop.name).join(','), limit: 100 }
+        });
+        const data = resp.data.results;
+        res.render('homepage', { title: 'Custom Objects | Integrating With HubSpot I Practicum', properties, data });
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to retrieve custom object records.');
+    }
+})
 
 // TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
 
 // * Code for Route 2 goes here
+app.get("/update-cobj", (req, res) => {
+    res.render('updates', { title: 'Update Custom Object Form | Integrating With HubSpot I Practicum' });
+})
 
 // TODO: ROUTE 3 - Create a new app.post route for the custom objects form to create or update your custom object data. Once executed, redirect the user to the homepage.
 
 // * Code for Route 3 goes here
+app.post("/update-cobj", async (req, res) => {
+    const newRecord = {
+        properties: req.body
+    };
+
+    const createRecord = 'https://api.hubapi.com/crm/v3/objects/2-70530070';
+    const headers = {
+        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+        'Content-Type': 'application/json'
+    };
+
+    try {
+        await axios.post(createRecord, newRecord, { headers });
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Failed to create the custom object record.');
+    }
+})
 
 /** 
 * * This is sample code to give you a reference for how you should structure your calls. 
